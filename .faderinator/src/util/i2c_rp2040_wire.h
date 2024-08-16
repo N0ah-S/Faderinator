@@ -6,11 +6,11 @@
 #define FADERINATOR_I2C_RP2040_WIRE_H
 
 #include <cstdio>
-#include <i2c_rp2040.h>
+#include "copy/i2c_rp2040_copy.h"
 #include <task.h>
 #include "util.h"
 
-class i2c_rp2040_wire : public i2c_rp2040 {
+class i2c_rp2040_wire : public i2c_rp2040_copy {
 
     byte buffer[128]{};
     byte address = 0;
@@ -20,7 +20,7 @@ public:
     i2c_rp2040_wire(uint8_t     index,
                     gpio_pin_t  sda_pin,
                     gpio_pin_t  scl_pin,
-                    uint16_t    mode) : i2c_rp2040(index, sda_pin, scl_pin, mode) {
+                    uint16_t    mode) : i2c_rp2040_copy(index, sda_pin, scl_pin, mode) {
 
     }
 
@@ -94,8 +94,6 @@ public:
         _sda.setGpio(new_pin);
         _sda.setSEL(GPIO_CTRL_FUNCSEL__i2c);
     }
-
-    friend i2c_rp2040;
 };
 
 #endif //FADERINATOR_I2C_RP2040_WIRE_H

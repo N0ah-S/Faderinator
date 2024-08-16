@@ -25,14 +25,13 @@ Application::Application(uart_rp2040& uart) : serial(uart),
             serial.print(("SSD1306 allocation failed for %d\n"), i);
         }
         displays[i].clearDisplay();
-        displays[i].print("Amazon Music");
+        displays[i].print("Starting");
         displays[i].drawChar(118, 54, '0' + i, 1, 0, 1);
         displays[i].display();
         wires[i].deactivate();
     }
 
     serial.reset();
-    serial.print("Does long text work?\n");
     serial << DataPacket{{DataPacket::PAGE_CHANGE, page, page}};
 }
 

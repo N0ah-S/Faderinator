@@ -82,7 +82,6 @@ SerialConnection &operator<<(SerialConnection &stream, const DataPacket packet) 
 }
 
 SerialConnection &operator<<(SerialConnection &stream, const YAHAL::String &string) {
-    return stream;
     int i = 0;
     while (i < string.size()) {
         DataPacket p{.type = DataPacket::DEBUG_PRINT};

@@ -32,9 +32,6 @@ public:
         if (index >= 0 && index < region_size) {
             //SerialConnection::inst->printInt("Index %d is out of bounds", index);
         }
-        if ((startPos + index) > region_size) {
-            //return 0xFF;
-        }
         return *(base + (startPos + index) % region_size);
     };
 

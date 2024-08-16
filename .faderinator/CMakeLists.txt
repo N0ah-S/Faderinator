@@ -37,6 +37,8 @@ add_executable(faderinator
         src/Application.h
         src/Fader.cpp
         src/util/GpioPin.cpp
+        src/util/copy/i2c_rp2040_copy.cpp
+        src/util/copy/i2c_rp2040_copy.h
 )
 
 # Add YAHAL to target
