@@ -11,8 +11,8 @@
 #include "io/DataPacket.h"
 #include "io/SerialConnection.h"
 
-Application::Application(uart_rp2040& uart) : serial(uart),
-                             pageUp(S1), pageDown(S2){
+Application::Application(uart_rp2040 &uart) : serial(uart),
+                                              pageUp(S1), pageDown(S2) {
     serial.leds[2].set_on_color(0xEE0000);
 
     for (int i = 0; i < PAGE_SIZE; ++i) {
@@ -21,7 +21,7 @@ Application::Application(uart_rp2040& uart) : serial(uart),
 
     for (int i = 0; i < PAGE_SIZE; ++i) {
         wires[i].reactivate();
-        while(!displays[i].begin(2, 0x3c )) {
+        while (!displays[i].begin(2, 0x3c)) {
             serial.print(("SSD1306 allocation failed for %d\n"), i);
         }
         displays[i].clearDisplay();
@@ -40,7 +40,7 @@ void Application::loop() {
 
     for (uint8_t i = 0; i < PAGE_SIZE; i++) {
         int val = faders[i].update();
-        if(val != -1) {
+        if (val != -1) {
             serial << DataPacket{{DataPacket::POSITION, static_cast<uint8_t>(i + page * PAGE_SIZE), (uint16_t) val}};
         }
     }
@@ -57,7 +57,7 @@ void Application::handleConfigurationPackets() {
         serial.print("type: %d,", c.type);
         switch (c.type) {
             case ConfigurationPacket::DAMAGED:
-                if(reRequestTimeout < task::millis()) {
+                if (reRequestTimeout < task::millis()) {
                     reRequestTimeout = task::millis() + 500;
                     updatePage(true); // resends everything of importance
                 }
@@ -100,11 +100,11 @@ void Application::handleConfigurationPackets() {
 }
 
 void Application::handleButtons() {
-    if(page < 3 && pageUp.isDown()) {
+    if (page < 3 && pageUp.isDown()) {
         page += 1;
         serial.print("Up to %d\n", page);
         updatePage();
-    } else if(page != 0 && pageDown.isDown()) {
+    } else if (page != 0 && pageDown.isDown()) {
         page -= 1;
         serial.print("Down to %d\n", page);
         updatePage();
@@ -114,7 +114,7 @@ void Application::handleButtons() {
 void Application::updatePage(bool partial) {
     serial << DataPacket{{DataPacket::PAGE_CHANGE, page, page}};
     task::sleep_ms(10);
-    if(partial) return;
+    if (partial) return;
 
     for (int i = 0; i < PAGE_SIZE; ++i) {
         wires[i].reactivate();

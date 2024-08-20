@@ -5,7 +5,7 @@
 if (DEFINED ENV{YAHAL_DIR} AND (NOT YAHAL_DIR))
     set(YAHAL_DIR $ENV{YAHAL_DIR})
     message("Using YAHAL_DIR from environment ('${YAHAL_DIR}')")
-endif()
+endif ()
 
 # Check if we need to locate the YAHAL root directory
 if (NOT YAHAL_DIR)

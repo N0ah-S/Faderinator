@@ -1,6 +1,11 @@
 #ifndef FADERINATOR_UTIL_H
 #define FADERINATOR_UTIL_H
 
+/////// EDIT THESE ///////
+#define VERBOSE_LOGGING 1
+//////////////////////////
+
+
 #define WS2812_PIN 29   // The GPIO pin controlling all the LEDs
 #define LED_COUNT  8    // Number of LEDs
 #define BUZZER 14
@@ -9,6 +14,13 @@
 
 #define ms20 65535
 #define micro (ms20/20/1000)
+
+#define LOG(...) SerialConnection::inst->print(__VA_ARGS__)
+#ifdef VERBOSE_LOGGING
+#define LOG_VERBOSE(...) LOG(__VA_ARGS__)
+#else
+#define LOG_VERBOSE(...)
+#endif
 
 #include "ws2812_rp2040.h"
 

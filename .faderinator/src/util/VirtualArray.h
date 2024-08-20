@@ -6,7 +6,7 @@
 #define FADERINATOR_VIRTUALARRAY_H
 
 #include <cassert>
-#include "../../../../../include/MCU/rp2040/RP2040.h"
+#include "RP2040.h"
 
 using namespace _PADS_BANK0_;
 using namespace _IO_BANK0_;

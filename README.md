@@ -16,4 +16,7 @@ WIP
 WIP
 
 
+
+The old state/the state when this project was submitted can be found [here](https://github.com/N0ah-S/Faderinator/tree/submission-state)
+
 [^1]: italic -> work (soon) in progress

@@ -109,7 +109,7 @@ public:
                     uint16_t color, uint16_t bg);
 
     template<int size, int bufferSize>
-    void drawCenteredBitmap(ByteRegion<size*size/8, bufferSize> *bitmap) {
+    void drawCenteredBitmap(ByteRegion<size * size / 8, bufferSize> *bitmap) {
         startWrite();
         for (int16_t j = 0; j < size; j++) {
             for (int16_t i = 0; i < size; i++) {

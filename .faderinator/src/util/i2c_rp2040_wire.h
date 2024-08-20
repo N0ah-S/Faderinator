@@ -10,6 +10,9 @@
 #include <task.h>
 #include "util.h"
 
+/**
+ * Wrapper around the YAHAL i2c interface to work as a better substitute for the Arduino Wire library
+ */
 class i2c_rp2040_wire : public i2c_rp2040_copy {
 
     byte buffer[128]{};
@@ -17,10 +20,10 @@ class i2c_rp2040_wire : public i2c_rp2040_copy {
     int position = 0;
 
 public:
-    i2c_rp2040_wire(uint8_t     index,
-                    gpio_pin_t  sda_pin,
-                    gpio_pin_t  scl_pin,
-                    uint16_t    mode) : i2c_rp2040_copy(index, sda_pin, scl_pin, mode) {
+    i2c_rp2040_wire(uint8_t index,
+                    gpio_pin_t sda_pin,
+                    gpio_pin_t scl_pin,
+                    uint16_t mode) : i2c_rp2040_copy(index, sda_pin, scl_pin, mode) {
 
     }
 
@@ -40,10 +43,10 @@ public:
     }
 
     void begin() {
-        address = 0; // broadcast???
+        address = 0; // broadcast
     }
 
-    int16_t i2cRead(uint16_t addr, uint8_t *rxbuf, uint16_t len, int timeout, bool sendStop = true) {
+    int16_t read(uint16_t addr, uint8_t *rxbuf, uint16_t len, int timeout, bool sendStop = true) {
         unsigned long until = task::millis() + timeout;
         if (!_initialized) initialize();
 
@@ -54,10 +57,10 @@ public:
         int byte_ctr;
         for (byte_ctr = 0; byte_ctr < len; ++byte_ctr) {
             bool first = byte_ctr == 0;
-            bool last  = byte_ctr == len - 1;
+            bool last = byte_ctr == len - 1;
 
-            while(_i2c->IC_TXFLR == 16) {
-                if(until < task::millis()) return -1;
+            while (_i2c->IC_TXFLR == 16) {
+                if (until < task::millis()) return -1;
             };
 
             uint32_t cmd = 1 << 8;
@@ -69,8 +72,8 @@ public:
             }
             _i2c->IC_DATA_CMD = cmd;
 
-            while(_i2c->IC_RXFLR == 0) {
-                if(until < task::millis()) return -1;
+            while (_i2c->IC_RXFLR == 0) {
+                if (until < task::millis()) return -1;
             };
 
             *rxbuf++ = _i2c->IC_DATA_CMD.DAT;

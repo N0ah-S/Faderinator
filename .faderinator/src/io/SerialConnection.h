@@ -20,15 +20,19 @@ class SerialConnection {
 
 public:
     // poor mans singelton
-    inline static SerialConnection* inst = nullptr;
+    inline static SerialConnection *inst = nullptr;
     // I think a getter would be overkill for this one
-    ByteRegion<64*8,BUFFER_SIZE>* lastBufferedImage = nullptr;
-    char* lastReadString;
+    ByteRegion<64 * 8, BUFFER_SIZE> *lastBufferedImage = nullptr;
+    char *lastReadString;
 
     explicit SerialConnection(uart_rp2040 &uart);
+
     [[nodiscard]] int availableBytes() const;
+
     void send(DataPacket data);
+
     ConfigurationPacket pollPacket();
+
     byte read();
 
     void print(const char *text, ...);
@@ -36,6 +40,7 @@ public:
     void reset();
 
     void print(const char *text, byte b);
+
     void printInt(const char *text, int i);
 
 

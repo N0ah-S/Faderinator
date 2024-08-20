@@ -9,13 +9,13 @@ InputPin::InputPin(gpio_pin_t pin) : gpio_rp2040_pin(pin) {
 }
 
 bool InputPin::isDown() {
-    if(!gpioRead()) {
+    if (!gpioRead()) {
         counter++;
-    } else if (counter > 0){
+    } else if (counter > 0) {
         counter--;
     }
 
-    if(counter > SENSITIVITY) {
+    if (counter > SENSITIVITY) {
         counter = -20; // anti spamming
         return true;
     }

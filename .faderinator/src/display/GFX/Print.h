@@ -8,7 +8,7 @@
 
 class Print {
 public:
- virtual void print(const char* text) = 0;
+    virtual void print(const char *text) = 0;
 };
 
 

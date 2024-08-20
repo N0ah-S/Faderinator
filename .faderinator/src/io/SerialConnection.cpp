@@ -29,7 +29,6 @@ int SerialConnection::availableBytes() const {
 void SerialConnection::send(DataPacket data) {
     uint8_t check = 0;
     for (uint8_t byte: data.data) {
-        //printf("Send byte %d\n", byte);
         check ^= byte;
         uart.putc(byte);
     }
@@ -39,7 +38,7 @@ void SerialConnection::send(DataPacket data) {
 byte SerialConnection::read() {
     unsigned long until = task::millis() + 200;
     while (availableBytes() == 0) {
-        if(until < task::millis()) return 0;
+        if (until < task::millis()) return 0;
     }
     return buffer[readPos++ % BUFFER_SIZE];
 }
@@ -48,11 +47,11 @@ ConfigurationPacket SerialConnection::pollPacket() {
     if (availableBytes() < 5) return ConfigurationPacket{.type = ConfigurationPacket::CommandType::IGNORE};
     ConfigurationPacket received{};
     std::copy(buffer + readPos, buffer + readPos + 4, std::begin(received.data));
-    if(buffer[readPos] == ConfigurationPacket::Image) {
+    if (buffer[readPos] == ConfigurationPacket::Image) {
         readPos += 2; // shared packet "header"
         handleImage();
         return received;
-    } else if(buffer[readPos] == ConfigurationPacket::Display_Text) {
+    } else if (buffer[readPos] == ConfigurationPacket::Display_Text) {
         readPos += 2; // shared packet "header"
         handleText();
         return received;
@@ -61,7 +60,7 @@ ConfigurationPacket SerialConnection::pollPacket() {
 
     byte check = 0;
     for (byte b: received.data) {
-        print("%d- ", b);
+        LOG_VERBOSE("%d- ", b);
         check ^= b;
     }
     byte compareTo = read();
@@ -69,9 +68,9 @@ ConfigurationPacket SerialConnection::pollPacket() {
         print("ok\n");
         return received;
     } else {
-        print(" - check failed with %d\n", compareTo ^ check);
-        print("with %d\n", compareTo);
-        print("with %d\n", check);
+        LOG_VERBOSE(" - check failed with %d\n", compareTo ^ check);
+        LOG_VERBOSE("with %d\n", compareTo);
+        LOG_VERBOSE("with %d\n", check);
         return ConfigurationPacket{.type = ConfigurationPacket::CommandType::DAMAGED};
     }
 }
@@ -129,19 +128,19 @@ void SerialConnection::reset() {
 
 void SerialConnection::handleImage() {
     print("Got an image\n");
-    while (availableBytes() < 64*8) {}
-    if(lastBufferedImage != nullptr) delete lastBufferedImage;
+    while (availableBytes() < 64 * 8) {}
+    if (lastBufferedImage != nullptr) delete lastBufferedImage;
     lastBufferedImage = new ByteRegion<64 * 8, BUFFER_SIZE>(buffer, readPos);
-    readPos += 64*8; // payload
+    readPos += 64 * 8; // payload
     byte check = read();
-    if(check == lastBufferedImage->checksumXOR()) {
+    if (check == lastBufferedImage->checksumXOR()) {
         print("nice\n");
     }
 }
 
 void SerialConnection::handleText() {
     byte length = read();
-    lastReadString = new char [length + 1];
+    lastReadString = new char[length + 1];
     for (int i = 0; i < length; ++i) {
         lastReadString[i] = read();
     }

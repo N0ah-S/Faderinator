@@ -19,25 +19,25 @@
 using namespace _IO_BANK0_;
 using namespace _RESETS_;
 
-i2c_rp2040_copy::i2c_rp2040_copy(uint8_t      index,
-                                 gpio_pin_t   sda_pin,
-                                 gpio_pin_t   scl_pin,
-                                 uint16_t     mode)
-    : _initialized(false), _index(index), _sda(sda_pin), _scl(scl_pin), _mode(mode),
-       _restart_on_next(false) {
+i2c_rp2040_copy::i2c_rp2040_copy(uint8_t index,
+                                 gpio_pin_t sda_pin,
+                                 gpio_pin_t scl_pin,
+                                 uint16_t mode)
+        : _initialized(false), _index(index), _sda(sda_pin), _scl(scl_pin), _mode(mode),
+          _restart_on_next(false) {
 
     assert(index < 2);
     assert((sda_pin <= 28) && (scl_pin <= 29));
     if (index == 0) {
-        assert( (((sda_pin-0) % 4) == 0) &&
-                (((scl_pin-1) % 4) == 0) );
+        assert((((sda_pin - 0) % 4) == 0) &&
+               (((scl_pin - 1) % 4) == 0));
     } else {
-        assert( (((sda_pin-2) % 4) == 0) &&
-                (((scl_pin-3) % 4) == 0) );
+        assert((((sda_pin - 2) % 4) == 0) &&
+               (((scl_pin - 3) % 4) == 0));
     }
-    _i2c     = (index==0) ? &I2C0     : &I2C1;
-    _i2c_set = (index==0) ? &I2C0_SET : &I2C1_SET;
-    _i2c_clr = (index==0) ? &I2C0_CLR : &I2C1_CLR;
+    _i2c = (index == 0) ? &I2C0 : &I2C1;
+    _i2c_set = (index == 0) ? &I2C0_SET : &I2C1_SET;
+    _i2c_clr = (index == 0) ? &I2C0_CLR : &I2C1_CLR;
 }
 
 i2c_rp2040_copy::~i2c_rp2040_copy() {
@@ -51,8 +51,8 @@ i2c_rp2040_copy::~i2c_rp2040_copy() {
 
 void i2c_rp2040_copy::initialize() {
     // Take SPI out of reset state
-    if (_index)  RESETS_CLR.RESET.i2c1 = 1;
-    else         RESETS_CLR.RESET.i2c0 = 1;
+    if (_index) RESETS_CLR.RESET.i2c1 = 1;
+    else RESETS_CLR.RESET.i2c0 = 1;
     // Configure GPIO pins SDA and SCL
     _sda.setSEL(GPIO_CTRL_FUNCSEL__i2c);
     _scl.setSEL(GPIO_CTRL_FUNCSEL__i2c);
@@ -77,8 +77,8 @@ void i2c_rp2040_copy::initialize() {
     _initialized = true;
 }
 
-int16_t i2c_rp2040_copy::i2cRead (uint16_t addr, uint8_t *rxbuf,
-                                  uint16_t len, bool sendStop) {
+int16_t i2c_rp2040_copy::i2cRead(uint16_t addr, uint8_t *rxbuf,
+                                 uint16_t len, bool sendStop) {
     if (!_initialized) initialize();
 
     _i2c->IC_ENABLE.ENABLE = 0;
@@ -88,9 +88,9 @@ int16_t i2c_rp2040_copy::i2cRead (uint16_t addr, uint8_t *rxbuf,
     int byte_ctr;
     for (byte_ctr = 0; byte_ctr < len; ++byte_ctr) {
         bool first = byte_ctr == 0;
-        bool last  = byte_ctr == len - 1;
+        bool last = byte_ctr == len - 1;
 
-        while(_i2c->IC_TXFLR == 16) ;
+        while (_i2c->IC_TXFLR == 16);
 
         uint32_t cmd = 1 << 8;
         if (first && _restart_on_next) {
@@ -101,7 +101,7 @@ int16_t i2c_rp2040_copy::i2cRead (uint16_t addr, uint8_t *rxbuf,
         }
         _i2c->IC_DATA_CMD = cmd;
 
-        while(_i2c->IC_RXFLR == 0) ;
+        while (_i2c->IC_RXFLR == 0);
 
         *rxbuf++ = _i2c->IC_DATA_CMD.DAT;
     }
@@ -120,7 +120,7 @@ int16_t i2c_rp2040_copy::i2cWrite(uint16_t addr, uint8_t *txbuf,
     int byte_ctr;
     for (byte_ctr = 0; byte_ctr < len; ++byte_ctr) {
         bool first = byte_ctr == 0;
-        bool last  = byte_ctr == len - 1;
+        bool last = byte_ctr == len - 1;
 
         uint32_t cmd = *txbuf++;
         if (first && _restart_on_next) {
@@ -135,7 +135,7 @@ int16_t i2c_rp2040_copy::i2cWrite(uint16_t addr, uint8_t *txbuf,
         // shift register has completed. For this to function correctly, the
         // TX_EMPTY_CTRL flag in IC_CON must be set. The TX_EMPTY_CTRL flag
         // was set in i2c_init.
-        while(!_i2c->IC_RAW_INTR_STAT.TX_EMPTY) ;
+        while (!_i2c->IC_RAW_INTR_STAT.TX_EMPTY);
     }
     _restart_on_next = !sendStop;
     return len;
@@ -175,7 +175,7 @@ void i2c_rp2040_copy::setSpeed(uint32_t freq) {
     _i2c->IC_CON.SPEED = IC_CON_SPEED__FAST;
     _i2c->IC_FS_SCL_HCNT = hcnt;
     _i2c->IC_FS_SCL_LCNT = lcnt;
-    _i2c->IC_FS_SPKLEN   = lcnt < 16 ? 1 : lcnt / 16;
+    _i2c->IC_FS_SPKLEN = lcnt < 16 ? 1 : lcnt / 16;
     _i2c->IC_SDA_HOLD.IC_SDA_TX_HOLD = sda_tx_hold_count;
 
     _i2c->IC_ENABLE.ENABLE = 1;

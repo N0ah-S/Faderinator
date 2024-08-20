@@ -8,9 +8,13 @@
 
 #include <gpio_rp2040.h>
 
+/**
+ * small wrapper for averaged/filtered button inputs
+ */
 class InputPin : public gpio_rp2040_pin {
 public:
-    InputPin(gpio_pin_t pin);
+    explicit InputPin(gpio_pin_t pin);
+
     bool isDown();
 
 private:

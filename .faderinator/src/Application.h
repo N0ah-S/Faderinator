@@ -15,7 +15,8 @@
 
 class Application {
 public:
-    explicit Application(uart_rp2040& uart);
+    explicit Application(uart_rp2040 &uart);
+
     void loop();
 
     static constexpr uart_mode_t MODE = UART::BITS_8 | UART::ODD_PARITY | UART::STOPBITS_2;
@@ -46,6 +47,7 @@ private:
     };
 
     void handleButtons();
+
     void updatePage(bool partial = false);
 
     void handleConfigurationPackets();
